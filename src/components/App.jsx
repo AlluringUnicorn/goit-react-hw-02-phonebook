@@ -1,36 +1,75 @@
 import { Component } from 'react';
 import Form from './Form';
-import { ListItem } from './ListItem';
+import { ContactList } from './ContactList';
+import { Filter } from './Filter';
+import css from './App.module.css';
 
 class App extends Component {
   state = {
-    contacts: [],
-    name: '',
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
+    filter: '',
   };
 
   createUser = data => {
     const newUser = {
       ...data,
     };
-    this.state.contacts.push(newUser);
-
     console.log(newUser);
-    console.log(this.state.contacts);
+    this.setState(prevState => ({
+      contacts: [...prevState.contacts, newUser],
+    }));
+  };
 
+  handleFilterChange = ({ target }) => {
+    this.setState({ filter: target.value });
+  };
+
+  checkUser = name => {
+    const { contacts } = this.state;
+
+    for (let contact of contacts) {
+      if (contact.name === name) {
+        alert(`${name} is already in contacts`);
+        return false;
+      }
+    }
+  };
+
+  handleDelete = ({ target }) => {
+    const { contacts } = this.state;
+
+    const updatedContacts = contacts.filter(
+      contact => contact.id !== target.dataset.id
+    );
+
+    this.setState({ contacts: updatedContacts });
   };
 
   render() {
+    const { contacts, filter } = this.state;
+
+    const normalizedFilter = filter.toLowerCase();
+
+    const filteredContacts = contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+
     return (
-      <>
+      <div className={css.wrapper}>
         <h1>Phonebook</h1>
-        <Form createUser={this.createUser}></Form>
+        <Form createUser={this.createUser} checkUser={this.checkUser}></Form>
         <h2>Contacts</h2>
-        <ul>
-          {this.state.contacts.length > 0 && (
-            <ListItem contacts={this.state.contacts}></ListItem>
-          )}
-        </ul>
-      </>
+        <Filter onChange={this.handleFilterChange} value={filter}></Filter>
+        <ContactList
+          contacts={filteredContacts}
+          handleDelete={this.handleDelete}
+        ></ContactList>
+      </div>
     );
   }
 }
