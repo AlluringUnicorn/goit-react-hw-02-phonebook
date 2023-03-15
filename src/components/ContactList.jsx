@@ -1,4 +1,5 @@
 import { ListItem } from './ListItem';
+import PropTypes from 'prop-types';
 
 export const ContactList = ({ contacts, handleDelete }) => {
   return (
@@ -9,3 +10,9 @@ export const ContactList = ({ contacts, handleDelete }) => {
     </ul>
   );
 };
+
+ContactList.propTypes = {
+  contacts: PropTypes.array.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+}
+
